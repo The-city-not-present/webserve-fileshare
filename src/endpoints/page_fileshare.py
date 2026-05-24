@@ -73,7 +73,11 @@ def render(path, request):
     else:
         raise HTTP403('Ambiguos token value')
 
-    requested_params = decrypt_payload(request_token) if request_token else assume_empty_request()
+    requested_params = None
+    try:
+        requested_params = decrypt_payload(request_token) if request_token else assume_empty_request()
+    except Exception as e:
+        raise HTTP403('Failed to parse access token')
     if not is_valid(requested_params):
         raise HTTP403('Request is invalid')
 
@@ -85,7 +89,7 @@ def render(path, request):
     response = make_html(
         title = 'Fileshare',
         page = 'fileshare',
-        h1 = 'Fileshare!',
+        h1 = 'Fileshare',
         meta = [],
         assets = [],
         cssclasses = ['page-fileshare'],

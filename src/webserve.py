@@ -78,7 +78,7 @@ def get_handler(endpoints):
                 content = f'Can\t find / no access: HTTP {statuscode}'
                 renderer = endpoints.get(statuscode,None)
                 if renderer and send_body:
-                    content, _ = renderer(self.path, self)
+                    content, _ = renderer(e, self)
 
                 self.send_response(200)
                 self.send_header(f"Content-type", f"{content_type}; charset=utf-8")
