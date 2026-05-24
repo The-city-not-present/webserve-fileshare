@@ -1,1 +1,2 @@
-# webserve-fileshare
+# html-template
+Basic template for webserve

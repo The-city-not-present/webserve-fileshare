@@ -1,0 +1,6 @@
+[submodule "src-make/lib/pinliner"]
+	path = src-make/lib/pinliner
+	url = git@github.com:The-city-not-present/pinliner.git
+[submodule "html-template"]
+	path = html-template
+	url = git@github.com:The-city-not-present/html-template.git

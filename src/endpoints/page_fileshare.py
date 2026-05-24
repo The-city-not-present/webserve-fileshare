@@ -1,0 +1,95 @@
+
+from urllib.parse import urlparse, parse_qs
+from datetime import datetime
+
+from dataclasses import dataclass
+from typing import Any
+
+
+from .lib.htmltmpl.src import make_html
+from .common_types import HTTP404, HTTP403
+from .lib.userauth import auth_service
+from .lib.permissions_manager import verify_access_permissions
+
+from .lib.encoder import decrypt_payload
+
+
+@dataclass(frozen=True)
+class ContextProcessingRequest:
+    user: Any
+    session_storage: Any
+    visitor_storage: Any
+    user_storage: Any
+
+
+
+
+def is_valid(requested_params):
+    if not isinstance(requested_params,dict):
+        return False
+    if 'useridentity' not in requested_params:
+        return False
+    if 'path' not in requested_params:
+        return False
+    if 'issued' not in requested_params:
+        return False
+    if 'expires' not in requested_params:
+        return False
+    return True
+
+def assume_empty_request():
+    return {
+        'path': '/',
+        'useridentity': None,
+        'issued': datetime.now(UTC),
+        'expires': datetime.fromisoformat('2099-12-31T23:59:59.99+00:00'),
+    }
+
+
+
+def render(path, request):
+    path_parsed = urlparse(request.path)
+    #     ParseResult(
+    #     scheme='',
+    #     netloc='',
+    #     path='/path/to/resource',
+    #     params='',
+    #     query='smp=99&user=me&requested=/hello',
+    #     fragment=''
+    # )
+    path_params = parse_qs(path_parsed.query)
+    # {
+    #   'smp': ['99'],
+    #   'user': ['me'],
+    #   'requested': ['/hello']
+    # }
+    request_token = None
+    token_params = path_params.get('t',[])
+    if len(t)==0:
+        # raise HTTP403('Missing token value')
+        request_token = None
+    elif len(t)==1:
+        request_token = t[0]
+    else:
+        raise HTTP403('Ambiguos token value')
+
+    requested_params = decrypt_payload(token) if token else assume_empty_request()
+    if not is_valid(requested_params):
+        raise HTTP403('Request is invalid')
+
+    user = auth_service.get_user()
+
+    if not verify_access_permissions(requested_params,user):
+        raise HTTP403('The content was moved, deleted, or you don\'t have permissions to see it')
+
+    response = make_html(
+        title = 'Fileshare',
+        page = 'fileshare',
+        h1 = 'Fileshare!',
+        meta = [],
+        assets = [],
+        cssclasses = ['page-fileshare'],
+        banners = [],
+        sections = [],
+    )
+    return response, 'text/html'
