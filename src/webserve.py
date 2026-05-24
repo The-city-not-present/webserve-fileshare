@@ -57,12 +57,12 @@ def get_handler(endpoints):
                 if not renderer:
                     raise HTTP404('Not found')
 
-                content, conent_type = renderer(self.path, self)
-                if not conent_type:
-                    conent_type = 'text/html'
+                content, content_type = renderer(self.path, self)
+                if not content_type:
+                    content_type = 'text/html'
 
                 self.send_response(200)
-                self.send_header(f"Content-type", f"{conent_type}; charset=utf-8")
+                self.send_header(f"Content-type", f"{content_type}; charset=utf-8")
                 self.end_headers()
                 if send_body:
                     self.wfile.write(content.encode("utf-8"))
@@ -73,15 +73,15 @@ def get_handler(endpoints):
                 if isinstance(e,HTTP403):
                     statuscode = 403
                 content_type = 'text/html' if not (self.headers.get("Accept") == "application/json") else 'application/json'
-                if not conent_type:
-                    conent_type = 'text/html'
+                if not content_type:
+                    content_type = 'text/html'
                 content = f'Can\t find / no access: HTTP {statuscode}'
                 renderer = endpoints.get(statuscode,None)
                 if renderer and send_body:
                     content, _ = renderer(self.path, self)
 
                 self.send_response(200)
-                self.send_header(f"Content-type", f"{conent_type}; charset=utf-8")
+                self.send_header(f"Content-type", f"{content_type}; charset=utf-8")
                 self.end_headers()
                 if send_body:
                     self.wfile.write(content.encode("utf-8"))

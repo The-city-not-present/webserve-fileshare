@@ -1,6 +1,6 @@
 
 from urllib.parse import urlparse, parse_qs
-from datetime import datetime
+from datetime import datetime, UTC
 
 from dataclasses import dataclass
 from typing import Any
@@ -8,8 +8,8 @@ from typing import Any
 
 from .lib.htmltmpl.src import make_html
 from .common_types import HTTP404, HTTP403
-from .lib.userauth import auth_service
 from .lib.permissions_manager import verify_access_permissions
+from .lib import userauth as auth_service
 
 from .lib.encoder import decrypt_payload
 
@@ -65,15 +65,15 @@ def render(path, request):
     # }
     request_token = None
     token_params = path_params.get('t',[])
-    if len(t)==0:
+    if len(token_params)==0:
         # raise HTTP403('Missing token value')
         request_token = None
-    elif len(t)==1:
-        request_token = t[0]
+    elif len(token_params)==1:
+        request_token = token_params[0]
     else:
         raise HTTP403('Ambiguos token value')
 
-    requested_params = decrypt_payload(token) if token else assume_empty_request()
+    requested_params = decrypt_payload(request_token) if request_token else assume_empty_request()
     if not is_valid(requested_params):
         raise HTTP403('Request is invalid')
 
