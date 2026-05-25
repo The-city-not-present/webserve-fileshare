@@ -10,15 +10,15 @@ import traceback, sys
 
 if __name__ == '__main__':
     # run as a program
-    import _VERSION
+    from GENERATED._VERSION import _VERSION
     from webserve import entry_point as program_webserve
 elif '.' in __name__:
     # package
-    from . import _VERSION
+    from .GENERATED._VERSION import _VERSION
     from .webserve import entry_point as program_webserve
 else:
     # included with no parent package
-    import _VERSION
+    from GENERATED._VERSION import _VERSION
     from webserve import entry_point as program_webserve
 
 
@@ -50,7 +50,7 @@ def call_printdoneanddone_program(*argcs,**kwargs):
     return True
 
 def call_printversion_program(*argcs,**kwargs):
-    msg = _VERSION._VERSION
+    msg = _VERSION
     msg = msg.strip()
     print(msg)
     return True

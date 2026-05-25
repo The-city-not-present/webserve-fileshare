@@ -6,8 +6,9 @@
 dist/
 compiled/
 build/
-TEMPLATE_COMPILED/
+#TEMPLATE_COMPILED/
 .env
+**/GENERATED/
 
 # Reports generated from real data
 report.*
@@ -21,8 +22,6 @@ tests-real-sensitive-data/
 test-results/
 
 # exclude auto-generated _VERSION
-src_backend/_VERSION.py
-src_backend/endpoints/_WEBAPP_VITE_MANIFEST.py
 
 # --- Python artifacts ---
 __pycache__/

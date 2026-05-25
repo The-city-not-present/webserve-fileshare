@@ -1,6 +1,6 @@
 import json
 
-from ._WEBAPP_VITE_MANIFEST import _WEBAPP_FRONT_VITE_MANIFEST
+from .GENERATED._WEBAPP_VITE_MANIFEST import _WEBAPP_FRONT_VITE_MANIFEST
 
 manifest = None
 try:
