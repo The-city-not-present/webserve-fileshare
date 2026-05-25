@@ -88,7 +88,7 @@ def render(path, request):
         raise HTTP403('The content was moved, deleted, or you don\'t have permissions to see it')
 
     main_section = f'''
-<div id="app"></div>
+<div class="container"><div id="app"></div></div>
     '''
     response = make_html(
         title = 'Fileshare',
