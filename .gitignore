@@ -21,8 +21,6 @@ examples/
 tests-real-sensitive-data/
 test-results/
 
-# exclude auto-generated _VERSION
-
 # --- Python artifacts ---
 __pycache__/
 *.pyc

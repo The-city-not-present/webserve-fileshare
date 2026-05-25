@@ -7,7 +7,7 @@ from typing import Any
 
 
 from .lib.htmltmpl.src import make_html
-from .read_vite_manifest import webapp_js_file, webapp_css_files
+from .read_vite_manifest import get_webapp_assets
 from .common_types import HTTP404, HTTP403
 from .lib.permissions_manager import verify_access_permissions
 from .lib import userauth as auth_service
@@ -48,7 +48,7 @@ def assume_empty_request():
 
 
 
-def render(path, request):
+def render(request, config, msg = None):
     path_parsed = urlparse(request.path)
     #     ParseResult(
     #     scheme='',
@@ -64,6 +64,7 @@ def render(path, request):
     #   'user': ['me'],
     #   'requested': ['/hello']
     # }
+    webapp_js_file, webapp_css_files = get_webapp_assets(config)
     request_token = None
     token_params = path_params.get('t',[])
     if len(token_params)==0:
@@ -92,7 +93,7 @@ def render(path, request):
     '''
     response = make_html(
         title = 'Fileshare',
-        page = 'fileshare',
+        page = 'Fileshare',
         h1 = 'Fileshare',
         meta = [],
         assets = [] + [('css-link',file,) for file in webapp_css_files] + [('js-link',webapp_js_file,),],
