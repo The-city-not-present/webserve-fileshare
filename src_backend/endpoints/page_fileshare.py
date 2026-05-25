@@ -7,6 +7,7 @@ from typing import Any
 
 
 from .lib.htmltmpl.src import make_html
+from .read_vite_manifest import webapp_js_file, webapp_css_files
 from .common_types import HTTP404, HTTP403
 from .lib.permissions_manager import verify_access_permissions
 from .lib import userauth as auth_service
@@ -94,9 +95,9 @@ def render(path, request):
         page = 'fileshare',
         h1 = 'Fileshare',
         meta = [],
-        assets = [],
+        assets = [] + [('css-link',file,) for file in webapp_css_files] + [('js-link',webapp_js_file,),],
         cssclasses = ['page-fileshare'],
         banners = [],
-        sections = [mainsection],
+        sections = [main_section],
     )
     return response, 'text/html'

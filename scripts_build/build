@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -e
+
+
+echo "Clear up \"dist/\"..."
+mkdir -p dist
+rm -rf dist
+mkdir -p dist
+echo "done"
+echo -
+echo -
+
+echo "Re-build front..."
+./build_front.sh
+echo "done"
+echo -
+echo -
+
+echo "Sync assets name from front..."
+echo "# updated" > src_backend/_WEBAPP_VITE_MANIFEST.py
+python -c 'from datetime import datetime; print(f"# {datetime.now()}")' >> src_backend/_WEBAPP_VITE_MANIFEST.py
+echo "_WEBAPP_FRONT_VITE_MANIFEST = '''" >> src_backend/_WEBAPP_VITE_MANIFEST.py
+python -c 'import json;d=json.loads("dist/webapp/.vite/manifest.json");print(repr(d));' >> src_backend/_WEBAPP_VITE_MANIFEST.py
+echo "'''" >> src_backend/_WEBAPP_VITE_MANIFEST.py
+echo "done"
+echo -
+echo -
+
+echo "Re-build back..."
+./build_back.sh
+echo "done"
+echo -
+echo -

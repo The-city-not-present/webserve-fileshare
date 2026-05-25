@@ -22,6 +22,7 @@ test-results/
 
 # exclude auto-generated _VERSION
 src_backend/_VERSION.py
+src_backend/endpoints/_WEBAPP_VITE_MANIFEST.py
 
 # --- Python artifacts ---
 __pycache__/

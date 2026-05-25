@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-# pushd ..
 
 echo "Clear up \"dist/\"..."
-
 mkdir -p dist
 rm -rf dist
 mkdir -p dist
@@ -12,65 +10,28 @@ echo "done"
 echo -
 echo -
 
-echo "Init python"
-source .venv/bin/activate
+echo "Re-build front..."
+./scripts_build/build_front.sh
 echo "done"
 echo -
 echo -
 
-echo "Update program version"
-echo "# updated" > src_backend/_VERSION.py
-python -c 'from datetime import datetime; print(f"# {datetime.now()}")' >> src_backend/_VERSION.py
-echo "_VERSION = '''" >> src_backend/_VERSION.py
-git describe >> src_backend/_VERSION.py
-echo "'''" >> src_backend/_VERSION.py
+echo "Sync assets name from front..."
+echo "# updated" > src_backend/endpoints/_WEBAPP_VITE_MANIFEST.py
+python -c 'from datetime import datetime; print(f"# {datetime.now()}")' >> src_backend/endpoints/_WEBAPP_VITE_MANIFEST.py
+echo "_WEBAPP_FRONT_VITE_MANIFEST = '''" >> src_backend/endpoints/_WEBAPP_VITE_MANIFEST.py
+python -c 'import json
+with open("dist/webapp/.vite/manifest.json", "r", encoding="utf-8") as f:
+    d=json.load(f)
+    print(json.dumps(d))
+' >> src_backend/endpoints/_WEBAPP_VITE_MANIFEST.py
+echo "'''" >> src_backend/endpoints/_WEBAPP_VITE_MANIFEST.py
 echo "done"
 echo -
 echo -
 
-echo "Re-build htmler..."
-pushd src_backend/endpoints/lib/htmltmpl
-if [ -f compiled/html_bundle.py ]; then
-  rm -rf compiled/html_bundle.py
-fi
-make init
-make build-only-static
-rm .env
-popd
+echo "Re-build back..."
+./scripts_build/build_back.sh
 echo "done"
 echo -
 echo -
-
-echo "Produce \"webserve_bundle.py\""
-echo "Calling pinliner..."
-# if [ ! -f "src_dev_build/lib/pinliner/pinliner/pinliner.py" ]; then
-#   # TODO: confirm is having --remote fine? I think it is. It's something like apt update, it is normal to run this occasionally. I don't see an issue
-#   git submodule update --init --recursive --remote
-# fi
-# comment: please delete .pyc files before every call of the webserve_bundle - this is implemented in my fork of the pinliner
-# python src_dev_build/lib/pinliner/pinliner/pinliner.py src_backend -o dist/webserve_bundle.py --verbose
-python "src_dev_build/lib/pinliner/pinliner/pinliner.py" src_backend -o dist/webserve_bundle.py
-echo "done"
-echo "Patching webserve_bundle.py..."
-echo "# ..." >> "dist/webserve_bundle.py"
-echo "# print('within webserve_bundle')" >> "dist/webserve_bundle.py"
-# no need for this, the root package is loaded automatically
-# echo "# import webserve_bundle" >> "dist/webserve_bundle.py"
-echo "from src_backend import launcher" >> "dist/webserve_bundle.py"
-echo "launcher.main()" >> "dist/webserve_bundle.py"
-echo "# print('out of webserve_bundle')" >> "dist/webserve_bundle.py"
-echo "done"
-echo -
-echo -
-
-
-echo "Bring \"static\" files to ./static/"
-mkdir -p ./dist/static
-rsync -av --exclude='*.py' src_backend/endpoints/lib/htmltmpl/compiled/ ./dist/static/
-echo "done"
-echo -
-echo -
-
-python dist/webserve_bundle.py --program done
-deactivate
-# popd
