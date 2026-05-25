@@ -86,6 +86,9 @@ def render(path, request):
     if not verify_access_permissions(requested_params,user):
         raise HTTP403('The content was moved, deleted, or you don\'t have permissions to see it')
 
+    main_section = f'''
+<div id="app"></div>
+    '''
     response = make_html(
         title = 'Fileshare',
         page = 'fileshare',
@@ -94,6 +97,6 @@ def render(path, request):
         assets = [],
         cssclasses = ['page-fileshare'],
         banners = [],
-        sections = [],
+        sections = [mainsection],
     )
     return response, 'text/html'

@@ -21,7 +21,7 @@ tests-real-sensitive-data/
 test-results/
 
 # exclude auto-generated _VERSION
-src/_VERSION.py
+src_backend/_VERSION.py
 
 # --- Python artifacts ---
 __pycache__/

@@ -19,22 +19,23 @@ echo -
 echo -
 
 echo "Update program version"
-echo "# updated" > src/_VERSION.py
-python -c 'from datetime import datetime; print(f"# {datetime.now()}")' >> src/_VERSION.py
-echo "_VERSION = '''" >> src/_VERSION.py
-git describe >> src/_VERSION.py
-echo "'''" >> src/_VERSION.py
+echo "# updated" > src_backend/_VERSION.py
+python -c 'from datetime import datetime; print(f"# {datetime.now()}")' >> src_backend/_VERSION.py
+echo "_VERSION = '''" >> src_backend/_VERSION.py
+git describe >> src_backend/_VERSION.py
+echo "'''" >> src_backend/_VERSION.py
 echo "done"
 echo -
 echo -
 
 echo "Re-build htmler..."
-pushd src/endpoints/lib/htmltmpl
+pushd src_backend/endpoints/lib/htmltmpl
 if [ -f compiled/html_bundle.py ]; then
   rm -rf compiled/html_bundle.py
 fi
 make init
 make build-only-static
+rm .env
 popd
 echo "done"
 echo -
@@ -42,20 +43,20 @@ echo -
 
 echo "Produce \"webserve_bundle.py\""
 echo "Calling pinliner..."
-# if [ ! -f "src-make/lib/pinliner/pinliner/pinliner.py" ]; then
+# if [ ! -f "src_dev_build/lib/pinliner/pinliner/pinliner.py" ]; then
 #   # TODO: confirm is having --remote fine? I think it is. It's something like apt update, it is normal to run this occasionally. I don't see an issue
 #   git submodule update --init --recursive --remote
 # fi
 # comment: please delete .pyc files before every call of the webserve_bundle - this is implemented in my fork of the pinliner
-# python src-make/lib/pinliner/pinliner/pinliner.py src -o dist/webserve_bundle.py --verbose
-python "src-make/lib/pinliner/pinliner/pinliner.py" src -o dist/webserve_bundle.py
+# python src_dev_build/lib/pinliner/pinliner/pinliner.py src_backend -o dist/webserve_bundle.py --verbose
+python "src_dev_build/lib/pinliner/pinliner/pinliner.py" src_backend -o dist/webserve_bundle.py
 echo "done"
 echo "Patching webserve_bundle.py..."
 echo "# ..." >> "dist/webserve_bundle.py"
 echo "# print('within webserve_bundle')" >> "dist/webserve_bundle.py"
 # no need for this, the root package is loaded automatically
 # echo "# import webserve_bundle" >> "dist/webserve_bundle.py"
-echo "from src import launcher" >> "dist/webserve_bundle.py"
+echo "from src_backend import launcher" >> "dist/webserve_bundle.py"
 echo "launcher.main()" >> "dist/webserve_bundle.py"
 echo "# print('out of webserve_bundle')" >> "dist/webserve_bundle.py"
 echo "done"
@@ -65,7 +66,7 @@ echo -
 
 echo "Bring \"static\" files to ./static/"
 mkdir -p ./dist/static
-rsync -av --exclude='*.py' src/endpoints/lib/htmltmpl/compiled/ ./dist/static/
+rsync -av --exclude='*.py' src_backend/endpoints/lib/htmltmpl/compiled/ ./dist/static/
 echo "done"
 echo -
 echo -
